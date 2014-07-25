@@ -23,12 +23,12 @@ class ExtensibleModelBase(models.base.ModelBase):
 
 def _find_extensions(app_label, model_name):
     ext = []
-
+    excluded_apps = getattr(settings, "RAPIDSMS_EXTENSIONS_EXCLUDE_APPS", [])
     suffix = "extensions.%s.%s" % (
         app_label, model_name.lower())
     modules = filter(None, [
         try_import("%s.%s" % (app_name, suffix))
-        for app_name in settings.INSTALLED_APPS])
+        for app_name in settings.INSTALLED_APPS if app_name not in excluded_apps])
 
     for module in modules:
         for cls in get_classes(module, models.Model):
